@@ -2,7 +2,9 @@ import pandas as pd
 import pickle 
 import streamlit as st
 import requests
+from fetch_posterr_api import fetch_images
 
+# Load the trained model and data from pickle files
 def load_model():
     try:
         with open('Recommendation_system.pkl', 'rb') as f:
@@ -19,42 +21,21 @@ def load_data():
         st.error("Data not found. Please preprocess the data first.")
         return None
         
-
+# call the function 
 data = load_data()
 model = load_model()
 
 
+# Recommend similar movies based on the given movie title and id to fetch the poster 
+def movies_similarity(title): 
+    """
+    This function uses a pre-trained similarity model to find movies that are
+    most similar to the provided title. It retrieves the movie titles and their 
+    corresponding posters for the top 5 most similar movies.
 
-def fetch_images(movie_id = None):
-    # API details
-    api_key = "2d93afa4fe9bcb72ba4e36370e670b79"
-    language = "en-US"
-
-    # Construct the URL
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}/images"
-
-    # Make the API request
-    insert_id_inUrl = url.format(movie_id = movie_id)
-    response = requests.get(insert_id_inUrl, params={"api_key": api_key})
-
-    # Handle the response
-    if response.status_code == 200:
-        data = response.json()
-        poster = data['posters'][0]
-        poster_file_path = poster['file_path']
-        Full_image_url = f"https://image.tmdb.org/t/p/w500/{poster_file_path}" 
-        return Full_image_url
-    else:
-        print(f"Error: {response.status_code}")
-
-
-
-
-
-
-
-
-def movies_similarity(title):
+    Example:
+    recommended_titles, recommended_posters = movies_similarity("Inception")
+    """
     try:
         recommended_movies = []
         recommended_movies_poster = []
@@ -75,12 +56,11 @@ def movies_similarity(title):
         return None
 
 
-
+# Display the title of the app and select the movie to get recommendations
 st.title("Movies Recommendation system")
-
 selected_movies = st.selectbox('Enter your favorite movie', data['title'])
 
-
+# To predict the recommendations of your favorite movies displayy the poster of the movies 
 if st.button('Recommendation'):
         title, posters = movies_similarity(selected_movies)
         st.subheader("Recommended Movies:")
@@ -93,19 +73,19 @@ if st.button('Recommendation'):
             st.image(posters[0])
 
         with col2:
-            st.markdown(f"#### {title[1]}")  # Use H3 for smaller text
+            st.markdown(f"#### {title[1]}") 
             st.image(posters[1])
 
         with col3:
-            st.markdown(f"#### {title[2]}")  # Use H3 for smaller text
+            st.markdown(f"#### {title[2]}")  
             st.image(posters[2])
 
         with col4:
-            st.markdown(f"#### {title[3]}")  # Use H3 for smaller text
+            st.markdown(f"#### {title[3]}") 
             st.image(posters[3])
 
         with col5:
-            st.markdown(f"#### {title[4]}")  # Use H3 for smaller text
+            st.markdown(f"#### {title[4]}") 
             st.image(posters[4])
 
 
