@@ -1,8 +1,8 @@
 import pandas as pd
 import pickle 
 import streamlit as st
-import requests
-from fetch_posterr_api import fetch_images
+from api_poster import fetch_images
+
 
 # Load the trained model and data from pickle files
 def load_model():
@@ -23,7 +23,7 @@ def load_data():
         
 # call the function 
 data = load_data()
-model = load_model()
+similarity_model = load_model()
 
 
 # Recommend similar movies based on the given movie title and id to fetch the poster 
@@ -40,7 +40,7 @@ def movies_similarity(title):
         recommended_movies = []
         recommended_movies_poster = []
         indx = data[data['title'] ==  title].index
-        similar_array = model[indx][0]
+        similar_array = similarity_model[indx][0]
         fivesimilar_movies= sorted(list(enumerate(similar_array)), reverse = True, key = lambda x: x[1])[1:6]
         
         for i, score in fivesimilar_movies:
@@ -65,9 +65,8 @@ if st.button('Recommendation'):
         title, posters = movies_similarity(selected_movies)
         st.subheader("Recommended Movies:")
         for i in title:
-
+            
             col1, col2, col3, col4, col5 = st.columns(5) # , col6, col7
-
         with col1:
             st.markdown(f"#### {title[0]}")  # Use H3 for smaller text
             st.image(posters[0])
